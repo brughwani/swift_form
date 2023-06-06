@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "159854638865",
+    "project_id": "swiftform-44e3c",
+    "storage_bucket": "swiftform-44e3c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159854638865:android:ea9becf8dc325bf6cd3eb0",
+        "android_client_info": {
+          "package_name": "com.example.swift_form"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "159854638865-14qvi3jol7v76f7fs2frgepp1vi7vd8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.swift_form",
+            "certificate_hash": "cabee912bb74b62685a22eb25a8bf36dbb97f766"
+          }
+        },
+        {
+          "client_id": "159854638865-r0gef7kqj00j8keluk0kmnncpii0q5d6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARAH4QbLhKA4X8Hv_L_gSOHA6XmXTxYG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "159854638865-r0gef7kqj00j8keluk0kmnncpii0q5d6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "159854638865-v9efruin36fc3ijbi02ecofq964vhcmn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.swiftForm"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
