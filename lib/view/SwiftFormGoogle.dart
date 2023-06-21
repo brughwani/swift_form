@@ -133,7 +133,7 @@ catch(e) {
               int? status=await firebasesignin(idToken);
               if (userCredential != null && status==200) {
                 print(2);
-                print(authtoken);
+
 
                 Navigator.push(context,MaterialPageRoute(builder:(context) => SwiftFormLogin(authtoken: authtoken)));
               } else {

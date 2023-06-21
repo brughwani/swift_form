@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../controller/OrderformItem.dart';
 
+TextEditingController item_name=TextEditingController();
+TextEditingController price=TextEditingController();
 class Confirmbutton extends StatefulWidget {
   const Confirmbutton({Key? key}) : super(key: key);
 
@@ -17,6 +20,9 @@ class _ConfirmbuttonState extends State<Confirmbutton> {
     return InkWell(
       onTap: ()
       {
+      var url="http://10.0.2.2:3000/api/v1/items";
+      var body={"name":item_name.text,"price":price.text};
+      var headers={{}};
 
         setState(() {
           isPressed=true;
@@ -38,11 +44,13 @@ class _ConfirmbuttonState extends State<Confirmbutton> {
 
 class RemoveButton extends StatelessWidget {
 
-  const RemoveButton({Key? key}) : super(key: key);
+  const RemoveButton({required this.k}) : super(key: k);
+
+  final Key k;
 
   @override
   Widget build(BuildContext context) {
-   // var Item=Provider.of<OrderFormItem>(context);
+   var Item=Provider.of<OrderFormItem>(context);
    // var index=widgetlist.indexOf();
 
 
@@ -50,7 +58,7 @@ class RemoveButton extends StatelessWidget {
       onTap: ()
       {
        // print(itemindex);
-       // Item.removeitem(index);
+       Item.removeitem(k);
       //  Provider.of<OrderFormItem>(context,listen: false).removeitem(index);
 
       },
@@ -102,7 +110,9 @@ class _BilltypeState extends State<Billtype> {
 
 Widget item()
 {
+  final key=UniqueKey();
   return Container(
+    key:key,
     height:300,
     child: Column(
         children: [
@@ -137,6 +147,7 @@ Widget item()
                   child: Padding(
                     padding:  EdgeInsets.symmetric(horizontal: 8),
                     child: TextField(
+                      controller: price,
                       decoration: InputDecoration(
                           hintText: "Price",
                           border:OutlineInputBorder(
@@ -170,7 +181,7 @@ Widget item()
                   children:[
                     Confirmbutton(),
                     SizedBox(width:10),
-                    RemoveButton()
+                    RemoveButton(k:key)
                   ]
               ),
             )

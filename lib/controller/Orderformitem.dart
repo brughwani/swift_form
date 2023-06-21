@@ -9,9 +9,9 @@ class OrderFormItem with ChangeNotifier
     widgetlist.add(item());
     notifyListeners();
   }
-  void removeitem(int index)
+  void removeitem(Key uniqueKey)
   {
-    widgetlist.remove(this.widgetlist[index]);
+    widgetlist=widgetlist.where((element) => element.key!=uniqueKey).toList();
     notifyListeners();
   }
 }

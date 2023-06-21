@@ -20,6 +20,43 @@ class _SwiftFormNameState extends State<SwiftFormName> {
   final name=TextEditingController();
   List<String> urls=['assets/Wavy_Bus-31_Single-04.png','assets/6736639 (1).png','assets/20943429 (1).png'];
 
+  Future<void> verifyuser()
+  async {
+    var url="http://10.0.2.2:3000/auth/verify";
+    final Map<String, String>? headers = {
+      'Authorization': widget.authtoken
+      // Add any other required headers
+    };
+    var response = await get(Uri.parse(url),headers: headers);
+    if(response.statusCode==200)
+      {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm( authtoken:widget.authtoken)));
+        Fluttertoast.showToast(
+            msg: "Verification Sucessful",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.grey,
+            textColor: Colors.black,
+            fontSize: 12
+        );
+      }
+    else
+      {
+        print(response.body);
+        Fluttertoast.showToast(
+            msg: "Verification failed",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.grey,
+            textColor: Colors.black,
+            fontSize: 12
+        );
+      }
+
+  }
+
 
   Future<void> createSalesman(String name)
   async {
@@ -34,7 +71,7 @@ class _SwiftFormNameState extends State<SwiftFormName> {
       var response = await put(Uri.parse(url),body: body,headers: headers);
       if(response.statusCode==200)
         {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm()));
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm()));
           Fluttertoast.showToast(
               msg: "Account created successfully",
               toastLength: Toast.LENGTH_SHORT,
@@ -111,6 +148,7 @@ class _SwiftFormNameState extends State<SwiftFormName> {
                 onTap: ()
                 {
                   createSalesman(name.text);
+                  verifyuser();
                 },
                 child: Container(
                   height: 48,

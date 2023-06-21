@@ -1,11 +1,118 @@
-import 'package:flutter/material.dart';
-import 'package:swift_form/view/Orderform.dart';
-class SwiftForm extends StatelessWidget {
-  const SwiftForm({Key? key}) : super(key: key);
+import 'dart:convert';
+import 'dart:io';
 
-  @override
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:swift_form/model/customer.dart';
+import 'package:swift_form/view/Orderform.dart';
+import 'package:excel/excel.dart';
+import 'package:http/http.dart' as http;
+class SwiftForm extends StatelessWidget {
+   SwiftForm({Key? key,required String this.authtoken}) : super(key: key);
+
+   String authtoken;
+
+
+   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+  Future<void> uploadcustomerdata(List<Map<String,dynamic>> customerdata)
+  async {
+   var url="http://10.0.2.2:3000/api/v1/customers/bulk_create";
+   final Map<String, String>? headers = {
+     'Authorization': authtoken,
+     // Add any other required headers,
+ //    'Content-Type':'application/json'
+   };
+   //Map<String,dynamic> customer= {"name":name,"address":address,"discount":discount};
+
+
+   //print(jsonEncode(customer));
+
+   //List<Map<String,dynamic>> c=[{"customers":customer}];
+
+   //c.add(customer);
+   Map<String,dynamic> body={"customers":jsonEncode(customerdata)};
+
+
+   var response = await http.post(Uri.parse(url),headers: headers,body: body);
+   if(response.statusCode==200)
+   {
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm( authtoken:widget.authtoken)));
+     print("Success");
+     Fluttertoast.showToast(
+         msg: "Upload Sucessful",
+         toastLength: Toast.LENGTH_SHORT,
+         gravity: ToastGravity.CENTER,
+         timeInSecForIosWeb: 5,
+         backgroundColor: Colors.grey,
+         textColor: Colors.black,
+         fontSize: 12
+     );
+   }
+   else
+   {
+     print(response.body);
+     Fluttertoast.showToast(
+         msg: "Upload failed",
+         toastLength: Toast.LENGTH_SHORT,
+         gravity: ToastGravity.CENTER,
+         timeInSecForIosWeb: 5,
+         backgroundColor: Colors.grey,
+         textColor: Colors.black,
+         fontSize: 12
+     );
+   }
+  }
+
+   void _openFilePicker() async {
+     FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom,
+       allowedExtensions: ['xlsx', 'xls']);
+     if (result != null) {
+       String filePath = result.files.single.path!;
+       _uploadcustomerFile(filePath);
+     }
+   }
+   void _uploadcustomerFile(String filePath) async {
+     var bytes = File(filePath).readAsBytesSync();
+     var excel = Excel.decodeBytes(bytes);
+     List<Map<String,dynamic>> c=[];
+
+     for (var table in excel.tables.keys) {
+       var rows = excel.tables[table]!.rows;
+       //print(rows);
+
+       // Skip header row if needed
+       var startIndex = 1;
+       // Process each row
+       for (var i = startIndex; i < rows.length; i++) {
+         var row = rows[i];
+         //print(row[1]?.value.toString());
+         // Access the first two columns by their indices
+
+         String? name= row[0]!.value.toString();
+         String? address = row[1]!.value.toString();
+         double discount=row[2]?.value;
+         Map<String,dynamic> customer= {"name":name,"address":address,"discount":discount};
+         c.add(customer);
+
+
+       }
+       uploadcustomerdata(c);
+
+
+
+     }
+
+   }
+
+
+
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         centerTitle: false,
         backgroundColor: Colors.white,
@@ -14,8 +121,46 @@ class SwiftForm extends StatelessWidget {
           height: 24,
           alignment: Alignment.topLeft,
         ),
-        actions: [CircleAvatar()],
+        actions: [InkWell(
+            onTap: ()
+            {
+              _scaffoldKey.currentState?.openEndDrawer();
+            },
+            child: CircleAvatar())],
       ),
+      endDrawer: Drawer(
+        child:ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child:Column(
+                children: [Text("Raju")],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.amber,
+              ),
+            ),
+            ListTile(
+              leading:Icon(Icons.upload),
+              title: Text('Upload price list'),
+              onTap: () {
+                _openFilePicker();
+                // Handle option 1 selection
+              },
+            ),
+            ListTile(
+              leading:Icon(Icons.upload),
+              title: Text('Upload list of customers'),
+              onTap: () {
+                // Handle option 2 selection
+                _openFilePicker();
+              },
+            ),
+            // Add more ListTiles or custom widgets as needed
+          ],
+        ),
+      ),
+
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
