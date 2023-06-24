@@ -13,9 +13,47 @@ class SwiftForm extends StatelessWidget {
 
    String authtoken;
 
-
    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+   Future<void> uploaditemdata(List<Map<String,dynamic>> itemdata)
+   async {
+var url="http://10.0.2.2:3000/api/v1/items/bulk_create";
+final Map<String, String>? headers = {
+  'Authorization': authtoken,
+  // Add any other required headers,
+  'Content-Type':'application/json'
+};
+print(headers);
+String body=jsonEncode({"items":itemdata});
+print(body);
+var response = await http.post(Uri.parse(url),headers: headers,body: body);
+if(response.statusCode==200)
+{
+  print("Success");
+  Fluttertoast.showToast(
+      msg: "Upload Sucessful",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 5,
+      backgroundColor: Colors.grey,
+      textColor: Colors.black,
+      fontSize: 12
+  );
+}
+else
+{
+  print(response.body);
+  Fluttertoast.showToast(
+      msg: "Upload failed",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 5,
+      backgroundColor: Colors.grey,
+      textColor: Colors.black,
+      fontSize: 12
+  );
+}
+   }
 
   Future<void> uploadcustomerdata(List<Map<String,dynamic>> customerdata)
   async {
@@ -23,24 +61,17 @@ class SwiftForm extends StatelessWidget {
    final Map<String, String>? headers = {
      'Authorization': authtoken,
      // Add any other required headers,
- //    'Content-Type':'application/json'
+    'Content-Type':'application/json'
    };
-   //Map<String,dynamic> customer= {"name":name,"address":address,"discount":discount};
 
+   String body=jsonEncode({"customers":customerdata});
 
-   //print(jsonEncode(customer));
-
-   //List<Map<String,dynamic>> c=[{"customers":customer}];
-
-   //c.add(customer);
-   Map<String,dynamic> body={"customers":jsonEncode(customerdata)};
 
 
    var response = await http.post(Uri.parse(url),headers: headers,body: body);
    if(response.statusCode==200)
    {
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm( authtoken:widget.authtoken)));
-     print("Success");
+    print("Success");
      Fluttertoast.showToast(
          msg: "Upload Sucessful",
          toastLength: Toast.LENGTH_SHORT,
@@ -66,13 +97,52 @@ class SwiftForm extends StatelessWidget {
    }
   }
 
-   void _openFilePicker() async {
+   void _openitemFilePicker() async {
      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom,
        allowedExtensions: ['xlsx', 'xls']);
      if (result != null) {
        String filePath = result.files.single.path!;
+       _uploaditemFile(filePath);
+     }
+   }
+   void _opencustomerPicker() async {
+     FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom,
+         allowedExtensions: ['xlsx', 'xls']);
+     if (result != null) {
+       String filePath = result.files.single.path!;
        _uploadcustomerFile(filePath);
      }
+   }
+   void _uploaditemFile(String filePath) async {
+     var bytes = File(filePath).readAsBytesSync();
+     var excel = Excel.decodeBytes(bytes);
+     List<Map<String,dynamic>> item=[];
+
+     for (var table in excel.tables.keys) {
+       var rows = excel.tables[table]!.rows;
+       //print(rows);
+
+       // Skip header row if needed
+       var startIndex = 1;
+       // Process each row
+       for (var i = startIndex; i < rows.length; i++) {
+         var row = rows[i];
+         //print(row[1]?.value.toString());
+         // Access the first two columns by their indices
+
+         String? name= row[0]!.value.toString();
+         //String? address = row[1]!.value.toString();
+         //print(row[1]!.value);
+
+         double price=double.parse(row[1]!.value.toString());
+
+          Map<String,dynamic> pricelist= {"name":name,"price":price};
+     item.add(pricelist);
+       }
+       uploaditemdata(item);
+
+     }
+
    }
    void _uploadcustomerFile(String filePath) async {
      var bytes = File(filePath).readAsBytesSync();
@@ -96,13 +166,8 @@ class SwiftForm extends StatelessWidget {
          double discount=row[2]?.value;
          Map<String,dynamic> customer= {"name":name,"address":address,"discount":discount};
          c.add(customer);
-
-
        }
        uploadcustomerdata(c);
-
-
-
      }
 
    }
@@ -144,7 +209,7 @@ class SwiftForm extends StatelessWidget {
               leading:Icon(Icons.upload),
               title: Text('Upload price list'),
               onTap: () {
-                _openFilePicker();
+                _openitemFilePicker();
                 // Handle option 1 selection
               },
             ),
@@ -153,7 +218,7 @@ class SwiftForm extends StatelessWidget {
               title: Text('Upload list of customers'),
               onTap: () {
                 // Handle option 2 selection
-                _openFilePicker();
+                _opencustomerPicker();
               },
             ),
             // Add more ListTiles or custom widgets as needed
