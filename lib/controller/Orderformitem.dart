@@ -4,9 +4,9 @@ import 'package:swift_form/model/itemwidget.dart';
 class OrderFormItem with ChangeNotifier
 {
   List<Widget> widgetlist=[];
-  void addwidget()
+  void addwidget(BuildContext context)
   {
-    widgetlist.add(item());
+    widgetlist.add(item(context:context));
     notifyListeners();
   }
   void removeitem(Key uniqueKey)

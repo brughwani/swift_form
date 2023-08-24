@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:googleapis/androidenterprise/v1.dart';
+//import 'package:flutter/material.dart';
 import 'package:swift_form/controller/OrderformItem.dart';
 import 'package:provider/provider.dart';
+//import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:swift_form/model/customer.dart';
+import 'package:searchfield/searchfield.dart';
+import 'package:http/http.dart';
+import 'package:swift_form/model/product.dart';
+import 'package:swift_form/model/order.dart';
+//final TextEditingController searchController = TextEditingController();
+TextEditingController village=TextEditingController();
+
+TextEditingController discount=TextEditingController();
+//String _searchText = '';
+//Customer? selectedCustomer;
+String c_id='';
+String item_id="";
+String Selectedquantity="";
+List<OrderItem> productorder=[];
+int productid=0;
+List<Map<int,OrderItem>> productorderlist=[];
+Order order=new Order(customerId:double.parse(c_id),customerDiscount: double.parse(discount.text),orderItems:productorder);
 class Confirmlist extends StatefulWidget {
-  const Confirmlist({Key? key}) : super(key: key);
+   Confirmlist({Key? key,required this.authtoken}) : super(key: key);
+  String authtoken;
 
   @override
   State<Confirmlist> createState() => _ConfirmlistState();
 }
 
 class _ConfirmlistState extends State<Confirmlist> {
-  Future<void> CreateOrderForm()
-  async {
-    var url="http://10.0.2.2:3000/api/v1/order_forms";
-    var body={
-    };
-  }
+
 
 
   bool isPressed=false;
@@ -23,10 +41,14 @@ class _ConfirmlistState extends State<Confirmlist> {
     return InkWell(
       onTap: ()
       {
-
+//CreateOrderForm(c_id,discount.text)
+      order.CreateOrderForm(c_id, discount.text,productorder,widget.authtoken);
         setState(() {
           isPressed=true;
         });
+
+        Navigator.pop(context);
+      productorder.clear();
       },
       child: Container(
         height: 48,
@@ -44,7 +66,9 @@ class _ConfirmlistState extends State<Confirmlist> {
 
 
 class OrderForm extends StatefulWidget {
-  OrderForm({Key? key}) : super(key: key);
+  OrderForm({Key? key,required this.authtoken}) : super(key: key);
+
+  String authtoken;
 
   @override
   State<OrderForm> createState() => _OrderFormState();
@@ -52,8 +76,21 @@ class OrderForm extends StatefulWidget {
 
 class _OrderFormState extends State<OrderForm> {
 
+
+  @override
+  void initState() {
+    super.initState();
+    //searchController.addListener(()=>onSearchTextChanged(searchController.text.toLowerCase()));
+    Provider.of<CustomerProvider>(context, listen: false).fetchCustomers(widget.authtoken);
+    Provider.of<ProductProvider>(context,listen:false).fetchproducts(widget.authtoken);
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Customer> customers = Provider.of<CustomerProvider>(context).customers;
+
+
+
     return Consumer<OrderFormItem>(
         builder: (context, state, child) {
           return Scaffold(
@@ -84,20 +121,28 @@ class _OrderFormState extends State<OrderForm> {
                             ])),
                     Padding(
                       padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
+                      child:SearchField<Customer>(suggestions:customers.map((e)=> SearchFieldListItem<Customer>(
+                       e.name,item:e,child:ListTile(title:Text(e.name),trailing:Text(e.address)))).toList(),
 
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "Customer Name",
+                        searchInputDecoration:InputDecoration(
+                          hintText: "Customer name",
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)
                             )
                         ),
+                        onSuggestionTap: (e){
+                        c_id=e.item!.id;
+                        village.text=e.item!.address;
+                        discount.text=e.item!.discount.toString();
+                        },
                       ),
+
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
 
                       child: TextField(
+                        controller: village,
                         decoration: InputDecoration(
                             hintText: "Village",
                             border: OutlineInputBorder(
@@ -110,6 +155,7 @@ class _OrderFormState extends State<OrderForm> {
                       padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
 
                       child: TextField(
+                        controller: discount,
                         decoration: InputDecoration(
                             hintText: "Customer Discount",
                             border: OutlineInputBorder(
@@ -123,7 +169,8 @@ class _OrderFormState extends State<OrderForm> {
                       padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
                       child: InkWell(
                         onTap: () {
-                          state.addwidget();
+                          state.addwidget(context);
+                          //productid++;
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -140,7 +187,6 @@ class _OrderFormState extends State<OrderForm> {
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-
                       child: TextField(
                         decoration: InputDecoration(
                             hintText: "Note/Scheme",
@@ -151,7 +197,7 @@ class _OrderFormState extends State<OrderForm> {
                       ),
                     ),
 
-                    Confirmlist()
+                    Confirmlist(authtoken: widget.authtoken)
                   ],
 
                 ),

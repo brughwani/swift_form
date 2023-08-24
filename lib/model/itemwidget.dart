@@ -1,11 +1,15 @@
+import 'dart:ffi';
+//import 'dart:js_interop';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:searchfield/searchfield.dart';
+import 'product.dart';
 import '../controller/OrderformItem.dart';
-
-TextEditingController item_name=TextEditingController();
-TextEditingController price=TextEditingController();
+import 'order.dart';
+import 'package:swift_form/view/Orderform.dart';
+import 'dart:convert';
 class Confirmbutton extends StatefulWidget {
   const Confirmbutton({Key? key}) : super(key: key);
 
@@ -15,18 +19,13 @@ class Confirmbutton extends StatefulWidget {
 
 class _ConfirmbuttonState extends State<Confirmbutton> {
   bool isPressed=false;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: ()
       {
-      var url="http://10.0.2.2:3000/api/v1/items";
-      var body={"name":item_name.text,"price":price.text};
-      var headers={{}};
 
-        setState(() {
-          isPressed=true;
-        });
       },
       child: Container(
         height: 48,
@@ -51,7 +50,7 @@ class RemoveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
    var Item=Provider.of<OrderFormItem>(context);
-   // var index=widgetlist.indexOf();
+
 
 
     return InkWell(
@@ -59,6 +58,12 @@ class RemoveButton extends StatelessWidget {
       {
        // print(itemindex);
        Item.removeitem(k);
+
+       //productorder.rem
+       //productorder.remove(value.);
+
+
+
       //  Provider.of<OrderFormItem>(context,listen: false).removeitem(index);
 
       },
@@ -108,8 +113,17 @@ class _BilltypeState extends State<Billtype> {
   }
 }
 
-Widget item()
+Widget item( {required BuildContext context})
 {
+
+  String p_id="";
+  String qty="";
+  List<Product> products=Provider.of<ProductProvider>(context,listen: false).products;
+
+
+
+  TextEditingController price=TextEditingController();
+  //TextEditingController q=TextEditingController();
   final key=UniqueKey();
   return Container(
     key:key,
@@ -118,15 +132,22 @@ Widget item()
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(16,24,16,16),
-            child: TextField(
+              child:SearchField<Product>(suggestions:products.map((e)=> SearchFieldListItem<Product>(
+      e.name,item:e,child:ListTile(title:Text(e.name),trailing:Text(e.price.toString())))).toList(),
 
-              decoration: InputDecoration(
-                  hintText: "Item Name",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  )
-              ),
-            ),
+searchInputDecoration:InputDecoration(
+hintText: "Item name",
+border: OutlineInputBorder(
+borderRadius: BorderRadius.circular(10)
+)
+),
+onSuggestionTap: (e){
+                
+price.text="₹"+e.item!.price.toString();
+p_id=e.item!.id;
+
+//print(p_id);
+},)
           ),
             Row(
               children: [
@@ -134,12 +155,19 @@ Widget item()
                   child: Padding(
                     padding: EdgeInsets.only(left:16),
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                           hintText: "Quantity",
                           border:OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)
                           )
                       ),
+                      onChanged: (value)
+                      {
+                        qty=value;
+                        //productorderlist.add({productid:OrderItem(itemId: double.parse(p_id), quantity: double.parse(qty))});
+                        productorder.add(OrderItem(itemId: double.parse(p_id), quantity: double.parse(qty)));
+                      },
                     ),
                   ),
                 ),
@@ -157,19 +185,6 @@ Widget item()
                     ),
                   ),
                 ),
-                Flexible(
-                  child: Padding(
-                    padding:  EdgeInsets.only(right: 16),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          hintText: "Discount Rate",
-                          border:OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)
-                          )
-                      ),
-                    ),
-                  ),
-                ),
 
               ],
             ),
@@ -179,8 +194,8 @@ Widget item()
                 //crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children:[
-                    Confirmbutton(),
-                    SizedBox(width:10),
+                    // Confirmbutton(),
+                    // SizedBox(width:10),
                     RemoveButton(k:key)
                   ]
               ),
