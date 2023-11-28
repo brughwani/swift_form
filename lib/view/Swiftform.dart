@@ -9,6 +9,7 @@ import 'package:swift_form/view/Orderform.dart';
 import 'package:excel/excel.dart';
 import 'package:http/http.dart' as http;
 import 'package:swift_form/view/ViewOrderform.dart';
+import 'UpdateOrder.dart';
 class SwiftForm extends StatefulWidget {
    SwiftForm({Key? key,required this.authtoken,required this.Name,required this.Phone,required this.email}) : super(key: key);
 
@@ -374,7 +375,7 @@ class _SwiftFormState extends State<SwiftForm> {
                                           IconButton(
                                             icon: Icon(Icons.edit),
                                             onPressed: () {
-
+                                              Navigator.push(context,MaterialPageRoute(builder: (context)=>UpdateOrderForm(id:orders[index],auth: widget.authtoken)));
                                             },
                                           ),
                                           IconButton(

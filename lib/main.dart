@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_form/controller/OrderformItem.dart';
 import 'package:swift_form/model/customer.dart';
+//import 'package:swift_form/model/order.dart';
+import 'controller/Orderitem.dart';
 import 'package:swift_form/model/product.dart';
 //import 'package:swift_form/model/Salesman.dart';
 //import 'package:swift_form/model/Phoneauth.dart';
@@ -27,7 +29,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(providers: [
       ChangeNotifierProvider<OrderFormItem>(create:(context) =>  OrderFormItem(),),
     ChangeNotifierProvider<CustomerProvider>(create:(context) => CustomerProvider()),
-    ChangeNotifierProvider<ProductProvider>( create:(context) => ProductProvider())
+    ChangeNotifierProvider<ProductProvider>( create:(context) => ProductProvider()),
+    ChangeNotifierProvider(create: (context)=>OrderItemProvider())
     ],
 
 

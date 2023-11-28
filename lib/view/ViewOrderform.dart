@@ -28,7 +28,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
   List<DataRow> _rows = [];
   List<Map<String, dynamic>> _data = [];
   List<Map<String, dynamic>> _dataforpdf=[];
-  List<pw.TableRow> _tablerows=[];
+  //List<pw.TableRow> _tablerows=[];
 
 
   Future<String> saveDocument({required String name, required pw.Document pdf}) async {
@@ -53,7 +53,6 @@ class _ViewOrderformState extends State<ViewOrderform> {
     const tableHeaders = [
 'Sr. No.',
       'Item Description',
-
       'Quantity',
       'Price',
       'Total'
@@ -220,6 +219,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
     var response = await get(Uri.parse(url), headers: headers);
     var data=jsonDecode(response.body);
    //print(data.runtimeType);
+//   print(data);
     //_data.clear();
     if(data is Map<String, dynamic>) {
       //print(data);
