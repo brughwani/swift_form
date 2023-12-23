@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'Addcustomer.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,6 +10,7 @@ import 'package:excel/excel.dart';
 import 'package:http/http.dart' as http;
 import 'package:swift_form/view/ViewOrderform.dart';
 import 'UpdateOrder.dart';
+import 'package:swift_form/config/config.dart';
 class SwiftForm extends StatefulWidget {
    SwiftForm({Key? key,required this.authtoken,required this.Name,required this.Phone,required this.email}) : super(key: key);
 
@@ -32,6 +33,7 @@ class _SwiftFormState extends State<SwiftForm> {
 
   Future<void> uploaditemdata(List<Map<String, dynamic>> itemdata) async {
     var url = "http://10.0.2.2:3000/api/v1/items/bulk_create";
+    var url2="${Config.getBaseUrl}/api/v1/items/bulk_create";
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken,
       // Add any other required headers,
@@ -40,7 +42,7 @@ class _SwiftFormState extends State<SwiftForm> {
     String body = jsonEncode({"items": itemdata});
 
     var response = await http.post(
-        Uri.parse(url), headers: headers, body: body);
+        Uri.parse(url2), headers: headers, body: body);
     if (response.statusCode == 200) {
       print("Success");
       Fluttertoast.showToast(
@@ -70,6 +72,7 @@ class _SwiftFormState extends State<SwiftForm> {
   Future<void> uploadcustomerdata(
       List<Map<String, dynamic>> customerdata) async {
     var url = "http://10.0.2.2:3000/api/v1/customers/bulk_create";
+    var url2="${Config.getBaseUrl}/api/v1/customers/bulk_create";
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken,
       // Add any other required headers,
@@ -80,7 +83,7 @@ class _SwiftFormState extends State<SwiftForm> {
 
 
     var response = await http.post(
-        Uri.parse(url), headers: headers, body: body);
+        Uri.parse(url2), headers: headers, body: body);
     if (response.statusCode == 200) {
       print("Success");
       Fluttertoast.showToast(
@@ -160,25 +163,26 @@ class _SwiftFormState extends State<SwiftForm> {
 
   Future<void> deleteorderform(int id) async {
     var url2 = "http://127.0.0.1:3000/api/v1/order_forms/" + id.toString();
+    var url3 = "${Config.getBaseUrl}/api/v1/order_forms/" + id.toString();
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken,
       // Add any other required headers,
     };
-    var response = await http.delete(Uri.parse(url2), headers: headers);
+    var response = await http.delete(Uri.parse(url3), headers: headers);
 
 //var data=jsonDecode(response.body);
     print(response.body);
   }
 
   Future<void> fetchorderforms() async {
-    var url2 = 'http://127.0.0.1:3000/api/v1/order_forms';
+    var url2 = '${Config.getBaseUrl}/api/v1/order_forms';
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken,
       // Add any other required headers,
     };
     var response = await http.get(Uri.parse(url2), headers: headers);
     var data = jsonDecode(response.body);
-    print(data);
+    //print(data);
 
     customers.clear();
     orders.clear();
@@ -194,7 +198,72 @@ class _SwiftFormState extends State<SwiftForm> {
 // print(customerids);
 
   }
+void showFormDialog(BuildContext context) {
+  final _formKey = GlobalKey<FormState>();
+  String _name = '';
+  String _address = '';
 
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Add customer'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Customer Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _name = value!;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Village'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter village';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _address = value!;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Submit'),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+
+                _formKey.currentState!.save();
+                // Now _name and _address hold the user input
+
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
   void _uploadcustomerFile(String filePath) async {
     var bytes = File(filePath).readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
@@ -286,6 +355,14 @@ class _SwiftFormState extends State<SwiftForm> {
                   _opencustomerPicker();
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text("Add customer"),
+                onTap: ()
+                {
+                 showFormDialog(context);
+                },
+              )
               // Add more ListTiles or custom widgets as needed
             ],
           ),
@@ -361,6 +438,7 @@ class _SwiftFormState extends State<SwiftForm> {
                               ),
 
                               ListView.builder(itemCount: customers.length,
+                              reverse: true,
                                   scrollDirection: Axis.vertical,
                                   physics: AlwaysScrollableScrollPhysics(),
                                   shrinkWrap: true,

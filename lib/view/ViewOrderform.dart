@@ -11,7 +11,7 @@ import 'package:share_plus/share_plus.dart';
 //import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:swift_form/config/config.dart';
 class ViewOrderform extends StatefulWidget {
   ViewOrderform({super.key,required this.id,required this.auth,required this.name,required this.phone});
   int id;
@@ -55,6 +55,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
       'Item Description',
       'Quantity',
       'Price',
+      'Discount'
       'Total'
     ];
 
@@ -84,6 +85,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
         'itemName': e['item']['name'],
         'quantity': e['quantity'],
         'price': e['item']['price'],
+        'discount':e['discount'],
         'total':e['quantity']*price
       }
       );
@@ -149,7 +151,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
                   data: <List<String>>[
                     for (var item in _dataforpdf)
 
-                      [item['SerialNo.'],item['itemName'], item['quantity'].toString(), item['price'].toString(),item['total'].toString()],
+                      [item['SerialNo.'],item['itemName'], item['quantity'].toString(), item['price'].toString(),item['discount'].toString(),item['total'].toString()],
 
                   ],
                   //border: pw.Border(),
@@ -159,6 +161,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
                     1: pw.FlexColumnWidth(3),
                     2: pw.FlexColumnWidth(1),
                     3: pw.FlexColumnWidth(1),
+                    4: pw.FlexColumnWidth(1)
                   },
                   cellStyle: pw.TextStyle(
                     fontSize: 12,
@@ -211,12 +214,13 @@ class _ViewOrderformState extends State<ViewOrderform> {
 
 
   Future<Map<String, dynamic>> fetchOrderDetails() async {
-    var url = "http://localhost:3000/api/v1/order_forms/${widget.id}";
+    //var url = "http://localhost:3000/api/v1/order_forms/${widget.id}";
+    var url2= "${Config.getBaseUrl}/api/v1/order_forms/${widget.id}";
     final Map<String, String>? headers = {
       'Authorization': widget.auth,
       // Add any other required headers,
     };
-    var response = await get(Uri.parse(url), headers: headers);
+    var response = await get(Uri.parse(url2), headers: headers);
     var data=jsonDecode(response.body);
    //print(data.runtimeType);
 //   print(data);
@@ -225,19 +229,22 @@ class _ViewOrderformState extends State<ViewOrderform> {
       //print(data);
 
       for (var e in data['order_items']) {
-        // print(e);
+         print(e);
         _data.add({
           'itemName': e['item']['name'],
           'quantity': e['quantity'],
           'price': e['item']['price'],
+          'discount':e['discount']
         });
       }
        // print(e['quantity']);
       for(var i in _data) {
+        print(i);
         _rows.add(DataRow(cells: [
           DataCell(Text(i['itemName'])),
           DataCell(Text(i['quantity'].toString())),
           DataCell(Text(i['price'].toString())),
+           DataCell(Text(i['discount'].toString())),
         ]));
       }
     }
@@ -270,6 +277,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
             String name = snapshot.data!['customer']['name'];
             String address=snapshot.data!['customer']['address'];
             return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Column(
                 children: [
                   Padding(
@@ -302,7 +310,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
                       children: [Text("Date & Time:"+snapshot.data!['created_at'], style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600))],
                     ),
                   ),
-                  DataTable(columns: [DataColumn(label:Text("Name")),DataColumn(label:Text("Quantity")),DataColumn(label:Text("Price"))], rows:_rows),
+                  DataTable(columns: [DataColumn(label:Text("Name")),DataColumn(label:Text("Quantity")),DataColumn(label:Text("Price")),DataColumn(label:Text("Discount"))], rows:_rows),
                 ],
               ),
             );

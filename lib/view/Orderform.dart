@@ -12,6 +12,7 @@ import 'package:swift_form/controller/Orderitem.dart';
 
 //final TextEditingController searchController = TextEditingController();
 TextEditingController village = TextEditingController();
+TextEditingController comments= TextEditingController();
 
 TextEditingController discount = TextEditingController();
 //String _searchText = '';
@@ -44,7 +45,8 @@ class _ConfirmlistState extends State<Confirmlist> {
     
     Order order = Order(
   customerId: double.tryParse(c_id) ?? 0,
-  customerDiscount: double.tryParse(discount.text) ?? 0,
+  comments: comments.text,
+  //customerDiscount: double.tryParse(discount.text) ?? 0,
   orderItems: orderitems,
 );
 
@@ -52,7 +54,7 @@ class _ConfirmlistState extends State<Confirmlist> {
       onTap: () {
 //CreateOrderForm(c_id,discount.text)
 //print(orderitems);
-        order.CreateOrderForm(c_id, discount.text,
+        order.CreateOrderForm(c_id,comments.text,
             orderitems, widget.authtoken);
         setState(() {
           isPressed = true;
@@ -145,7 +147,7 @@ class _OrderFormState extends State<OrderForm> {
                     onSuggestionTap: (e) {
                       c_id = e.item!.id;
                       village.text = e.item!.address;
-                      discount.text = e.item!.discount.toString();
+                      //discount.text = e.item!.discount.toString();
                     },
                   ),
                 ),
@@ -159,16 +161,16 @@ class _OrderFormState extends State<OrderForm> {
                             borderRadius: BorderRadius.circular(10))),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: TextField(
-                    controller: discount,
-                    decoration: InputDecoration(
-                        hintText: "Customer Discount",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10))),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                //   child: TextField(
+                //     controller: discount,
+                //     decoration: InputDecoration(
+                //         hintText: "Customer Discount",
+                //         border: OutlineInputBorder(
+                //             borderRadius: BorderRadius.circular(10))),
+                //   ),
+                // ),
                 ...state.widgetlist,
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
@@ -194,6 +196,7 @@ class _OrderFormState extends State<OrderForm> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                   child: TextField(
+                    controller: comments,
                     decoration: InputDecoration(
                         hintText: "Note/Scheme",
                         border: OutlineInputBorder(

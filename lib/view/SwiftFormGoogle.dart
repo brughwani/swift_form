@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:swift_form/config/config.dart';
 //import 'package:swift_form/model/Salesman.dart';
 import 'package:swift_form/view/SwiftFormLogin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 
 class SwiftformGoogleLogin extends StatefulWidget {
-  SwiftformGoogleLogin({Key? key}) : super(key: key);
+  SwiftformGoogleLogin({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SwiftformGoogleLogin> createState() => _SwiftformGoogleLoginState();
@@ -41,10 +44,9 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
     return prefs.containsKey(key);
   }
 
-  Future<int?> firebasesignin(var token) async
-  {
-    var url = "http://10.0.2.2:3000/auth/firebase";
-    var url2 = "http://127.0.0.1:3000/auth/firebase";
+  Future<int?> firebasesignin(var token) async {
+    // var url = "http://10.0.2.2:3000/auth/firebase";
+    var url2 = "${Config.getBaseUrl}/auth/firebase";
     //Dio dio = Dio();
     var body = {"id_token": "${token}"};
     //print(token);
@@ -62,20 +64,20 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
         setState(() {
           authtoken = decoded['token']['Authorization'];
         });
-        Fluttertoast.showToast(msg: "User created successfully",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 5,
-            backgroundColor: Colors.grey,
-            textColor: Colors.black,
-            fontSize: 12);
-
-        return response.statusCode;
-      }
-      else {
         Fluttertoast.showToast(
-            msg: "User creation failed with status code :${response
-                .statusCode}",
+            msg: "User created successfully",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.grey,
+            textColor: Colors.black,
+            fontSize: 12);
+
+        return response.statusCode;
+      } else {
+        Fluttertoast.showToast(
+            msg:
+                "User creation failed with status code :${response.statusCode}",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 5,
@@ -85,10 +87,10 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
 
         return response.statusCode;
       }
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
-      Fluttertoast.showToast(msg: " Error code :${e}",
+      Fluttertoast.showToast(
+          msg: " Error code :${e}",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 5,
@@ -103,16 +105,16 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser!
-          .authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
       return userCredential;
     } catch (error) {
       print('Error signing in with Google: $error');
@@ -125,32 +127,36 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
     return FutureBuilder(
         future: hasDataCollected('email'),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data == true && authtoken.isNotEmpty) {
-           // print(authtoken);
+          if (snapshot.hasData &&
+              snapshot.data == true &&
+              authtoken.isNotEmpty) {
+            // print(authtoken);
             return SwiftFormLogin(authtoken: authtoken);
           } else {
             return Scaffold(
-              body: SafeArea(child: Column(
+              body: SafeArea(
+                  child: Column(
                 children: [
-                  Image(
-                      image: AssetImage("assets/Frame 43.png")),
-                  Text("Create Orders in a flash", style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
-                  CarouselSlider(options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 16 / 9,
-                  ), items: urls.map((String path) {
-                    return Image(
-                        alignment: Alignment.center,
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width,
-                        height: 363, image: AssetImage(path));
-                  }).toList()),
+                  Image(image: AssetImage("assets/Frame 43.png")),
+                  Text("Create Orders in a flash",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  CarouselSlider(
+                      options: CarouselOptions(
+                        autoPlay: true,
+                        aspectRatio: 16 / 9,
+                      ),
+                      items: urls.map((String path) {
+                        return Image(
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width,
+                            height: 363,
+                            image: AssetImage(path));
+                      }).toList()),
                   InkWell(
                     onTap: () async {
-                      final UserCredential? userCredential = await signInWithGoogle();
+                      final UserCredential? userCredential =
+                          await signInWithGoogle();
                       final user = FirebaseAuth.instance.currentUser;
 
                       //print(user.email);
@@ -158,13 +164,15 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
 
                       int? status = await firebasesignin(idToken);
 
-
                       if (userCredential != null && status == 200) {
                         await saveData('email', user!.email);
                         print(authtoken);
 
-                        Navigator.push(context, MaterialPageRoute(builder: (
-                            context) => SwiftFormLogin(authtoken: authtoken)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SwiftFormLogin(authtoken: authtoken)));
                       } else {
                         Fluttertoast.showToast(
                             msg: "Google Signin failed",
@@ -173,8 +181,7 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
                             timeInSecForIosWeb: 5,
                             backgroundColor: Colors.grey,
                             textColor: Colors.black,
-                            fontSize: 12
-                        );
+                            fontSize: 12);
                       }
                     },
                     child: Container(
@@ -187,21 +194,17 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
                         ),
                       ),
                       child: Row(
-                        children: [ImageIcon(size: 22,
-                            AssetImage("assets/2991148.png")), Text(
-                            "Login with Google")
+                        children: [
+                          ImageIcon(size: 22, AssetImage("assets/2991148.png")),
+                          Text("Login with Google")
                         ],
                       ),
                     ),
                   )
                 ],
-              )
-
-
-              ),
+              )),
             );
           }
         });
   }
 }
-

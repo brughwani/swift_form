@@ -1,6 +1,6 @@
 import 'package:http/http.dart';
 import 'dart:convert';
-
+import 'package:swift_form/config/config.dart';
 import 'package:flutter/material.dart';
 
 class Product
@@ -18,13 +18,14 @@ class ProductProvider with ChangeNotifier
   {
     final url = 'http://10.0.2.2:3000/api/v1/customers';
     final url2="http://127.0.0.1:3000/api/v1/items";
+    var url3="${Config.getBaseUrl}/api/v1/items";
     final Map<String, String>? headers = {
       'Authorization': auth,
       // Add any other required headers,
       'Content-Type':'application/json'
     };
     try {
-      Response response = (await get(Uri.parse(url2),headers: headers));
+      Response response = (await get(Uri.parse(url3),headers: headers));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         //print(data);

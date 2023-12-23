@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../model/itemwidget.dart';
 //import 'package:searchfield/searchfield.dart';
+import '../model/product.dart';
 import 'package:http/http.dart';
 TextEditingController village = TextEditingController();
 TextEditingController customer = TextEditingController();
@@ -26,7 +28,7 @@ class UpdateOrder extends StatelessWidget {
 }
 
 class UpdateOrderForm extends StatefulWidget {
-  UpdateOrderForm({super.key,required this.id,required this.auth,});
+  UpdateOrderForm({super.key,required this.id,required this.auth});
   String auth;
   int id;
 
@@ -35,6 +37,13 @@ class UpdateOrderForm extends StatefulWidget {
 }
 
 class _UpdateOrderFormState extends State<UpdateOrderForm> {
+  void initState()
+  {
+    super.initState();
+    Provider.of<ProductProvider>(context, listen: false)
+        .fetchproducts(widget.auth);
+  }
+
 
 
   Future<Map<String, dynamic>> fetchOrderDetails() async {
@@ -118,6 +127,27 @@ class _UpdateOrderFormState extends State<UpdateOrderForm> {
                   ),
                 ),
                 item(context: context),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                  child: InkWell(
+                    onTap: () {
+                      //state.addwidget(context);
+
+                      //productid++;
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all()),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.add_circle_outline),
+                          Text("Add Item")
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 UpdateOrder()
               ]   
     

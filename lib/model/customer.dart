@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:swift_form/config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 class Customer {
@@ -23,13 +23,14 @@ class CustomerProvider with ChangeNotifier {
   void fetchCustomers(String auth) async {
     final url = 'http://10.0.2.2:3000/api/v1/customers';
     final url2="http://127.0.0.1:3000/api/v1/customers";
+    var url3="${Config.getBaseUrl}/api/v1/customers";
     final Map<String, String>? headers = {
       'Authorization': auth,
       // Add any other required headers,
       'Content-Type':'application/json'
     };
     try {
-      http.Response response = await http.get(Uri.parse(url2),headers: headers);
+      http.Response response = await http.get(Uri.parse(url3),headers: headers);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
        // print(data);

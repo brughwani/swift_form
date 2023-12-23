@@ -9,8 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:swift_form/main.dart';
-
+import '/Users/bhavesh/StudioProjects/swift_form/lib/config/config_prod.dart' as prod;
+import '/Users/bhavesh/StudioProjects/swift_form/lib/config/config_dev.dart' as dev;
 void main() {
+  const bool isProduction = bool.fromEnvironment('dart.vm.product');
+  
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget( MyApp());

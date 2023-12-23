@@ -2,16 +2,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:swift_form/controller/OrderformItem.dart';
 import 'package:swift_form/model/customer.dart';
+import 'package:swift_form/model/itemdata.dart';
 //import 'package:swift_form/model/order.dart';
 import 'controller/Orderitem.dart';
 import 'package:swift_form/model/product.dart';
 //import 'package:swift_form/model/Salesman.dart';
 //import 'package:swift_form/model/Phoneauth.dart';
-import 'view/SwiftFormLogin.dart';
+//import 'view/SwiftFormLogin.dart';
 import 'package:provider/provider.dart';
 import 'view/SwiftFormGoogle.dart';
-
+// import 'config/config_prod.dart' as prod;
+// import 'config/config_dev.dart' as dev;
+// import 'config/config.dart';
 Future<void> main() async {
+
+  
   WidgetsFlutterBinding.ensureInitialized();
   //final  s=Salesman(email: "", phone: "", name:"");
   await Firebase.initializeApp();
@@ -19,8 +24,8 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  //final Salesman s;
+   MyApp({super.key});
+ 
 
   // This widget is the root of your application.
 
@@ -30,7 +35,8 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider<OrderFormItem>(create:(context) =>  OrderFormItem(),),
     ChangeNotifierProvider<CustomerProvider>(create:(context) => CustomerProvider()),
     ChangeNotifierProvider<ProductProvider>( create:(context) => ProductProvider()),
-    ChangeNotifierProvider(create: (context)=>OrderItemProvider())
+    ChangeNotifierProvider(create: (context)=>OrderItemProvider()),
+    ChangeNotifierProvider(create: ((context) => ItemData()))
     ],
 
 

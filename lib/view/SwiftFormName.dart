@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 //import 'package:swift_form/model/Salesman.dart';
 import 'package:swift_form/view/Swiftform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:swift_form/config/config.dart';
 //import 'package:dio/dio.dart' as dio;
 //import 'package:dio_http_cache/dio_http_cache.dart';
 class SwiftFormName extends StatefulWidget {
@@ -40,11 +40,13 @@ class _SwiftFormNameState extends State<SwiftFormName> {
   Future<void> verifyuser() async {
     var url = "http://10.0.2.2:3000/auth/verify";
     var url2 = "http://127.0.0.1:3000/auth/verify";
+    var url3='${Config.getBaseUrl}/auth/verify';
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken
       // Add any other required headers
     };
-    var response = await get(Uri.parse(url2), headers: headers);
+
+    var response = await get(Uri.parse(url3), headers: headers);
     if (response.statusCode == 200) {
       var userdata = jsonDecode(response.body);
       Name = userdata['user']['name'];
@@ -83,6 +85,7 @@ class _SwiftFormNameState extends State<SwiftFormName> {
   Future<void> createSalesman(String name) async {
     var url = "http://10.0.2.2:3000/users/update_details";
     var url2 = "http://127.0.0.1:3000/users/update_details";
+    var url3="${Config.getBaseUrl}/users/update_details";
     var body = {"name": name};
     final Map<String, String>? headers = {
       'Authorization': widget.authtoken
@@ -90,7 +93,7 @@ class _SwiftFormNameState extends State<SwiftFormName> {
     };
     //print(body);
     try {
-      var response = await put(Uri.parse(url2), body: body, headers: headers);
+      var response = await put(Uri.parse(url3), body: body, headers: headers);
       if (response.statusCode == 200) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => SwiftForm()));
         Fluttertoast.showToast(

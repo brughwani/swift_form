@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 //import 'package:swift_form/model/Salesman.dart';
+import 'package:swift_form/config/config.dart';
+
 import 'package:http/http.dart';
+//import 'package:swift_form/config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'SwiftFormName.dart';
 
@@ -47,7 +50,7 @@ class _SwiftFormLoginState extends State<SwiftFormLogin> {
 
   Future<void> updatephone(String phone) async {
     var url = "http://10.0.2.2:3000/users/update_details";
-    var url2 = "http://127.0.0.1:3000/users/update_details";
+    var url2 = "${Config.getBaseUrl}/users/update_details";
     var body = {"phone_number": "${phone}"};
     //print(widget.authtoken);
     final Map<String, String>? headers = {

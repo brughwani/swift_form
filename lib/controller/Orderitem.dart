@@ -5,26 +5,28 @@ class OrderItemProvider extends ChangeNotifier {
   List<OrderItem> orderitems = [];
 
   void addOrderItem(OrderItem orderItem) {
-    print(orderitems.length);
+    
     orderitems.add(orderItem);
-    print(orderitems.length);
-    print("#######");
-    //print(orderitems);
-    //print(1);
+   
+    for (var i in orderItems) {
+     print(i.itemId);
+     print(i.quantity);
+    }
+
     notifyListeners();
   }
 
   void removeOrderItem(OrderItem orderItem) {
-    print(orderItem.itemId);
-    for (var i in orderItems) {
-     print(i);
-    }
+    //print(orderItem.itemId);
+    // for (var i in orderItems) {
+    //  print(i);
+    // }
 
-    print(orderItems); //[]
-    print("-----");
+    // print(orderItems); //[]
+    // print("-----");
 
     orderitems.removeWhere((element) => element.itemId == orderItem.itemId);
-    print(orderitems); //["Instance of orderItem"]
+    //print(orderitems); //["Instance of orderItem"]
     notifyListeners();
   }
 }

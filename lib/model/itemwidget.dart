@@ -8,20 +8,51 @@ import 'product.dart';
 import '../controller/OrderformItem.dart';
 import 'order.dart';
 import 'package:swift_form/view/Orderform.dart';
-import 'package:swift_form/controller/Orderitem.dart';
-class Confirmbutton extends StatelessWidget {
-  const Confirmbutton({Key? key, required this.p_id, required this.qty})
+//import 'package:swift_form/controller/Orderitem.dart';
+import 'itemdata.dart';
+ String pId = "";
+  double qty=0;
+  double disc=0;
+class Confirmbutton extends StatefulWidget {
+   Confirmbutton({Key? key})
       : super(key: key);
 
-  final String p_id;
-  final String qty;
-  final bool isPressed = false;
+ 
+  @override
+  State<Confirmbutton> createState() => _ConfirmbuttonState();
+}
+
+class _ConfirmbuttonState extends State<Confirmbutton> {
+  //final bool isPressed = false;
+  Color _buttonColor = Colors.amber;
 
   @override
   Widget build(BuildContext context) {
+    OrderItemProvider orderitem = Provider.of<OrderItemProvider>(context);
+    final itemData = Provider.of<ItemData>(context);
+    double qty = itemData.qty;
+    String pId = itemData.pId;
+    double disc=itemData.disc;
+
+    // final itemData = Provider.of<ItemData>(context);
+    // double qty = itemData.qty;
+    // String pId = itemData.pId;
+
+ 
     return InkWell(
       onTap: () {
-        // print(p_id);
+        setState(() {
+_buttonColor=Colors.grey;
+        });
+        
+
+ //itemData.updateValues(pId,qty);
+         
+// print(oI.itemId);
+        // print(widget.p_id);
+        // print(widget.qty);
+       orderitem.addOrderItem(OrderItem(itemId: double.tryParse(pId) ?? 0, quantity: qty,discount: disc));
+        
         // print(qty);
        //productorder.add(Tuple2(double.parse(p_id),OrderItem(itemId: double.parse(p_id), quantity: double.parse(qty))));
     // print(productorder);
@@ -31,7 +62,7 @@ class Confirmbutton extends StatelessWidget {
         width: 164,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: Colors.amber, borderRadius: BorderRadius.circular(10)),
+            color: _buttonColor, borderRadius: BorderRadius.circular(10)),
         child: const Text("Confirm Item"),
       ),
     );
@@ -39,26 +70,27 @@ class Confirmbutton extends StatelessWidget {
 }
 
 class RemoveButton extends StatelessWidget {
-  RemoveButton({required this.k,required this.pId,required this.qty}) : super(key: k);
+  RemoveButton({required this.k}) : super(key: k);
 
   final Key k;
-  String pId;
-  double qty;
-
+  
   @override
   Widget build(BuildContext context) {
     var Item = Provider.of<OrderFormItem>(context);
 OrderItemProvider orderitem = Provider.of<OrderItemProvider>(context);
- 
+ final itemData = Provider.of<ItemData>(context);
+    
     return InkWell(
       onTap: () {
 
+OrderItem oi=OrderItem(itemId: double.tryParse(itemData.pId) ?? 0, quantity: itemData.qty,discount: itemData.disc);
         // print(itemindex);
         
-        print(qty);
-        orderitem.removeOrderItem(OrderItem(itemId: double.tryParse(pId) ?? 0, quantity: qty));
+        //print(qty);
+
+        orderitem.removeOrderItem(oi);
         Item.removeitem(k);
-        print(orderitem.orderitems.length);
+        //print(orderitem.orderitems.length);
 
         //productorder.rem
         //productorder.remove(value.);
@@ -101,6 +133,7 @@ class _BilltypeState extends State<Billtype> {
         onChanged: (String? newValue) {
           setState(() {
             dropdownvalue = newValue!;
+
           });
         },
       ),
@@ -109,8 +142,8 @@ class _BilltypeState extends State<Billtype> {
 }
 
 Widget item({required BuildContext context}) {
-  String pId = "";
-  double qty=0;
+  final itemData = Provider.of<ItemData>(context, listen: false);
+  
   List<Product> products =
       Provider.of<ProductProvider>(context, listen: false).products;
 OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, listen: false);
@@ -142,6 +175,7 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
               onSuggestionTap: (e) {
                 price.text = "₹${e.item!.price}";
                 pId = e.item!.id;
+                print(pId);
                    // print(orderItemProvider.orderitems);
 
               },
@@ -161,8 +195,10 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10))),
                   onChanged: (value) {
-                    qty = double.parse(value);
-                    orderItemProvider.addOrderItem(OrderItem(itemId: double.parse(pId), quantity: qty));
+                    qty = double.tryParse(value) ?? 0;
+                    
+                    //print(qty);
+                   // orderItemProvider.addOrderItem(OrderItem(itemId: double.parse(pId), quantity: qty));
                  
                     //productorder.add(OrderItem(itemId: double.parse(pId), quantity: double.parse(qty)));
                     // // Check if item ID already exists in the list
@@ -209,6 +245,26 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
                 ),
               ),
             ),
+              Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: TextField(
+                  controller: discount,
+                  decoration: InputDecoration(
+                      hintText: "Disc(%)",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                    onChanged: (value)
+                    {
+
+                      disc=double.tryParse(value) ?? 0;
+                       itemData.updateValues(pId,qty,disc);
+         
+
+                    },
+                ),
+              ),
+            ),
           ],
         ),
         const Billtype(),
@@ -217,9 +273,9 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
               //crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Confirmbutton(p_id: p_id,qty: qty),
+                Confirmbutton(),
                 const SizedBox(width: 10),
-                RemoveButton(k: key,pId: pId,qty: qty)
+                RemoveButton(k: key)
               ]),
         )
       ],
