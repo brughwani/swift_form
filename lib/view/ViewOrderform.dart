@@ -8,16 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:swift_form/view/Orderform.dart';
 //import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:swift_form/config/config.dart';
 class ViewOrderform extends StatefulWidget {
-  ViewOrderform({super.key,required this.id,required this.auth,required this.name,required this.phone});
+  ViewOrderform({super.key,required this.id,required this.auth,required this.name,required this.phone, this.notes = ""});
   int id;
   String auth;
   String name;
   String phone;
+  String notes;
+
   @override
   State<ViewOrderform> createState() => _ViewOrderformState();
 }
@@ -55,7 +58,8 @@ class _ViewOrderformState extends State<ViewOrderform> {
       'Item Description',
       'Quantity',
       'Price',
-      'Discount'
+      'Discount',
+      'R/B',
       'Total'
     ];
 
@@ -75,18 +79,19 @@ class _ViewOrderformState extends State<ViewOrderform> {
 
     for (var e in orderItems) {
       //print(e['quantity'].runtimeType);
-      print(e['item']['price'].runtimeType);
+    //  print(e['item']['price'].runtimeType);
 
       //final int quantity = int.parse(e['quantity']); // Convert 'quantity' to an integer
      final double price = double.parse(e['item']['price']); // Convert 'price' to a double
-
+      final double discount=double.parse(e['discount'].toString());
       _dataforpdf.add({
         'SerialNo.': serialNumber.toString(),
         'itemName': e['item']['name'],
         'quantity': e['quantity'],
         'price': e['item']['price'],
         'discount':e['discount'],
-        'total':e['quantity']*price
+        'tax_type':e['tax_type'],
+        'total':e['quantity']*(price*(1-discount*0.01))
       }
       );
       serialNumber++;
@@ -136,7 +141,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
                  pw.Text("૩૦ દિવસ ઉપર રકમ બાકી હશે તો સદર ઓર્ડરનો માલ રવાના કરવામાં નહિ આવે",style:pw.TextStyle(font: pw.Font.ttf(font2))),
                   //pw.Text("If the amount is outstanding for more than 30 days, the goods of the above order will not be dispatched"),
                   pw.Divider(),
-                  pw.Text("For emergency service and spareparts kindly whatsapp 9925234758")
+                  pw.Text("For emergency service and spare parts kindly whatsapp 9925234758")
 
                 ]),
           ]
@@ -151,7 +156,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
                   data: <List<String>>[
                     for (var item in _dataforpdf)
 
-                      [item['SerialNo.'],item['itemName'], item['quantity'].toString(), item['price'].toString(),item['discount'].toString(),item['total'].toString()],
+                      [item['SerialNo.'],item['itemName'], item['quantity'].toString(), item['price'].toString(),item['discount'].toString(),item['tax_type'],item['total'].toString()],
 
                   ],
                   //border: pw.Border(),
@@ -161,7 +166,8 @@ class _ViewOrderformState extends State<ViewOrderform> {
                     1: pw.FlexColumnWidth(3),
                     2: pw.FlexColumnWidth(1),
                     3: pw.FlexColumnWidth(1),
-                    4: pw.FlexColumnWidth(1)
+                    4: pw.FlexColumnWidth(1),
+                    5: pw.FlexColumnWidth(1)
                   },
                   cellStyle: pw.TextStyle(
                     fontSize: 12,
@@ -229,12 +235,14 @@ class _ViewOrderformState extends State<ViewOrderform> {
       //print(data);
 
       for (var e in data['order_items']) {
-         print(e);
+        // print(e);
         _data.add({
           'itemName': e['item']['name'],
           'quantity': e['quantity'],
           'price': e['item']['price'],
-          'discount':e['discount']
+          'discount':e['discount'],
+          'tax_type':e['tax_type'],
+          
         });
       }
        // print(e['quantity']);
@@ -245,6 +253,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
           DataCell(Text(i['quantity'].toString())),
           DataCell(Text(i['price'].toString())),
            DataCell(Text(i['discount'].toString())),
+           DataCell(Text(i['tax_type'].toString())),
         ]));
       }
     }
@@ -276,6 +285,7 @@ class _ViewOrderformState extends State<ViewOrderform> {
             //print(snapshot.data!);
             String name = snapshot.data!['customer']['name'];
             String address=snapshot.data!['customer']['address'];
+            //String notes=snapshot.data![]
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Column(
@@ -310,7 +320,15 @@ class _ViewOrderformState extends State<ViewOrderform> {
                       children: [Text("Date & Time:"+snapshot.data!['created_at'], style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600))],
                     ),
                   ),
-                  DataTable(columns: [DataColumn(label:Text("Name")),DataColumn(label:Text("Quantity")),DataColumn(label:Text("Price")),DataColumn(label:Text("Discount"))], rows:_rows),
+
+                  DataTable(columns: [DataColumn(label:Text("Name")),DataColumn(label:Text("Quantity")),DataColumn(label:Text("Price")),DataColumn(label:Text("Discount"),),DataColumn(label:Text("R/B"))], rows:_rows),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [Text("Notes:"+snapshot.data!['notes'].toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600))],
+                    ),
+                  ),
+
                 ],
               ),
             );

@@ -46,6 +46,7 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
 
   Future<int?> firebasesignin(var token) async {
     // var url = "http://10.0.2.2:3000/auth/firebase";
+    
     var url2 = "${Config.getBaseUrl}/auth/firebase";
     //Dio dio = Dio();
     var body = {"id_token": "${token}"};
@@ -115,6 +116,7 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
 
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
+   //   await _googleSignIn.signInSilently(reAuthenticate: true);
       return userCredential;
     } catch (error) {
       print('Error signing in with Google: $error');
@@ -166,7 +168,7 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
 
                       if (userCredential != null && status == 200) {
                         await saveData('email', user!.email);
-                        print(authtoken);
+                       // print(authtoken);
 
                         Navigator.push(
                             context,

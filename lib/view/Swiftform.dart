@@ -58,7 +58,7 @@ class _SwiftFormState extends State<SwiftForm> {
     else {
       print(response.body);
       Fluttertoast.showToast(
-          msg: "Upload failed",
+          msg: "Upload failed"+response.body,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 5,
@@ -99,7 +99,7 @@ class _SwiftFormState extends State<SwiftForm> {
     else {
       print(response.body);
       Fluttertoast.showToast(
-          msg: "Upload failed",
+          msg: "Upload failed "+response.body,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 5,
@@ -283,11 +283,11 @@ void showFormDialog(BuildContext context) {
 
         String? name = row[0]!.value.toString();
         String? address = row[1]!.value.toString();
-        double discount = row[2]?.value;
+        
         Map<String, dynamic> customer = {
           "name": name,
           "address": address,
-          "discount": discount
+          
         };
         c.add(customer);
       }
@@ -355,15 +355,15 @@ void showFormDialog(BuildContext context) {
                   _opencustomerPicker();
                 },
               ),
-              ListTile(
-                leading: Icon(Icons.people),
-                title: Text("Add customer"),
-                onTap: ()
-                {
-                 showFormDialog(context);
-                },
-              )
-              // Add more ListTiles or custom widgets as needed
+              // ListTile(
+              //   leading: Icon(Icons.people),
+              //   title: Text("Add customer"),
+              //   onTap: ()
+              //   {
+              //    showFormDialog(context);
+              //   },
+              // )
+              // // Add more ListTiles or custom widgets as needed
             ],
           ),
         ),

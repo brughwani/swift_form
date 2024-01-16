@@ -13,9 +13,11 @@ import 'itemdata.dart';
  String pId = "";
   double qty=0;
   double disc=0;
+  String bill_type="R";
 class Confirmbutton extends StatefulWidget {
-   Confirmbutton({Key? key})
+   Confirmbutton({Key? key,required String pId,required double qty,required double disc})
       : super(key: key);
+
 
  
   @override
@@ -29,11 +31,8 @@ class _ConfirmbuttonState extends State<Confirmbutton> {
   @override
   Widget build(BuildContext context) {
     OrderItemProvider orderitem = Provider.of<OrderItemProvider>(context);
-    final itemData = Provider.of<ItemData>(context);
-    double qty = itemData.qty;
-    String pId = itemData.pId;
-    double disc=itemData.disc;
-
+    String billType = Provider.of<BillTypeProvider>(context).billType;
+    
     // final itemData = Provider.of<ItemData>(context);
     // double qty = itemData.qty;
     // String pId = itemData.pId;
@@ -41,19 +40,22 @@ class _ConfirmbuttonState extends State<Confirmbutton> {
  
     return InkWell(
       onTap: () {
+         //  print(2);
+       // print(bill_type);
+
         setState(() {
 _buttonColor=Colors.grey;
         });
-        
+         orderitem.addOrderItem(OrderItem(itemId: double.tryParse(pId) ?? 0,tax_type:billType, quantity: qty,discount: disc));
+      //  print(pId);
+      
 
  //itemData.updateValues(pId,qty);
          
 // print(oI.itemId);
         // print(widget.p_id);
         // print(widget.qty);
-       orderitem.addOrderItem(OrderItem(itemId: double.tryParse(pId) ?? 0, quantity: qty,discount: disc));
-        
-        // print(qty);
+       // print(qty);
        //productorder.add(Tuple2(double.parse(p_id),OrderItem(itemId: double.parse(p_id), quantity: double.parse(qty))));
     // print(productorder);
       },
@@ -82,8 +84,8 @@ OrderItemProvider orderitem = Provider.of<OrderItemProvider>(context);
     
     return InkWell(
       onTap: () {
-
-OrderItem oi=OrderItem(itemId: double.tryParse(itemData.pId) ?? 0, quantity: itemData.qty,discount: itemData.disc);
+      
+OrderItem oi=OrderItem(itemId: double.tryParse(itemData.pId) ?? 0,tax_type: bill_type ,quantity: itemData.qty,discount: itemData.disc);
         // print(itemindex);
         
         //print(qty);
@@ -118,8 +120,11 @@ class Billtype extends StatefulWidget {
 
 class _BilltypeState extends State<Billtype> {
   String dropdownvalue = "R";
+  //String 
   @override
   Widget build(BuildContext context) {
+    //
+    var billtypeprovider= Provider.of<BillTypeProvider>(context,listen: false);
     return SizedBox(
       width: 328,
       height: 54,
@@ -133,8 +138,11 @@ class _BilltypeState extends State<Billtype> {
         onChanged: (String? newValue) {
           setState(() {
             dropdownvalue = newValue!;
-
+           // bill_type = newValue!;
           });
+          billtypeprovider.updateBillType(dropdownvalue);
+     
+           
         },
       ),
     );
@@ -143,7 +151,7 @@ class _BilltypeState extends State<Billtype> {
 
 Widget item({required BuildContext context}) {
   final itemData = Provider.of<ItemData>(context, listen: false);
-  
+  //final key1 = ValueKey<String>(pId);
   List<Product> products =
       Provider.of<ProductProvider>(context, listen: false).products;
 OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, listen: false);
@@ -161,10 +169,10 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
             child: Consumer<OrderItemProvider>(
   builder: (context,OrderItemProvider, child) {
     return SearchField<Product>(
-              suggestions: products.where((product)=>!OrderItemProvider.orderitems.any((orderItem) => orderItem.itemId.toString()==product.id))
-                  .map((e) => SearchFieldListItem<Product>(e.name,
+              suggestions: products.map((e) => SearchFieldListItem<Product>(e.name,
                       item: e,
                       child: ListTile(
+                        //key: key1,
                           title: Text(e.name),
                           trailing: Text(e.price.toString()))))
                   .toList(),
@@ -175,7 +183,7 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
               onSuggestionTap: (e) {
                 price.text = "₹${e.item!.price}";
                 pId = e.item!.id;
-                print(pId);
+               // print(pId);
                    // print(orderItemProvider.orderitems);
 
               },
@@ -273,7 +281,7 @@ OrderItemProvider orderItemProvider = Provider.of<OrderItemProvider>(context, li
               //crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Confirmbutton(),
+                Confirmbutton(pId: itemData.pId,qty:itemData.qty,disc: itemData.disc),
                 const SizedBox(width: 10),
                 RemoveButton(k: key)
               ]),

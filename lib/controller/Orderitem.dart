@@ -8,10 +8,10 @@ class OrderItemProvider extends ChangeNotifier {
     
     orderitems.add(orderItem);
    
-    for (var i in orderItems) {
-     print(i.itemId);
-     print(i.quantity);
-    }
+    // for (var i in orderItems) {
+    //  print(i.itemId);
+    //  print(i.quantity);
+    // }
 
     notifyListeners();
   }

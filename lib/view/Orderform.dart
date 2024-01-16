@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 //import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:swift_form/model/customer.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:swift_form/model/itemwidget.dart';
 import 'package:swift_form/model/product.dart';
 import 'package:swift_form/model/order.dart';
 import 'package:swift_form/controller/Orderitem.dart';
@@ -49,7 +50,10 @@ class _ConfirmlistState extends State<Confirmlist> {
   //customerDiscount: double.tryParse(discount.text) ?? 0,
   orderItems: orderitems,
 );
-
+//print("---------");
+print(order.comments);
+//print(order.orderItems[order.orderItems.length-1].tax_type);
+//print(order.orderItems[0].quantity);
     return InkWell(
       onTap: () {
 //CreateOrderForm(c_id,discount.text)
@@ -61,7 +65,8 @@ class _ConfirmlistState extends State<Confirmlist> {
         });
 
         Navigator.pop(context);
-      
+        village.clear();
+      comments.clear();
       orderitems.clear();
       widgetList.clear();
       },

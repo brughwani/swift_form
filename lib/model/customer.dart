@@ -6,14 +6,13 @@ class Customer {
   String id;
   String name;
   String address;
-  double discount;
 
 
   Customer({
     required this.id,
     required this.name,
     required this.address,
-    required this.discount,
+    
   });
 }
 class CustomerProvider with ChangeNotifier {
@@ -36,7 +35,7 @@ class CustomerProvider with ChangeNotifier {
        // print(data);
 
 
-        customers = data.map((item) => Customer.new(id:item['id'].toString(),name:item['name'], address:item['address'],discount:item['discount'])).toList();
+        customers = data.map((item) => Customer.new(id:item['id'].toString(),name:item['name'], address:item['address'])).toList();
         //print(_customers[0].name);
 
 

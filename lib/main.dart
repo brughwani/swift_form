@@ -36,7 +36,9 @@ class MyApp extends StatelessWidget {
     ChangeNotifierProvider<CustomerProvider>(create:(context) => CustomerProvider()),
     ChangeNotifierProvider<ProductProvider>( create:(context) => ProductProvider()),
     ChangeNotifierProvider(create: (context)=>OrderItemProvider()),
-    ChangeNotifierProvider(create: ((context) => ItemData()))
+    ChangeNotifierProvider(create: ((context) => ItemData())),
+    ChangeNotifierProvider(create: (context) => BillTypeProvider()),
+    
     ],
 
 

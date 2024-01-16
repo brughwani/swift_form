@@ -1,11 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.swift_form">
+    package="com.example.swift_form"
+    xmlns:tools="http://schemas.android.com/tools">
       <uses-sdk tools:overrideLibrary="dev.fluttercommunity.plus.share"/>
+      <uses-permission android:name="android.permission.INTERNET" /> 
+    
 
    <application
         android:label="swift_form"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
