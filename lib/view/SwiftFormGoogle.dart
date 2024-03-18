@@ -49,12 +49,17 @@ class _SwiftformGoogleLoginState extends State<SwiftformGoogleLogin> {
     
     var url2 = "${Config.getBaseUrl}/auth/firebase";
     //Dio dio = Dio();
-    var body = {"id_token": "${token}"};
+    var body = jsonEncode({"id_token": "$token"});
+    final Map<String, String>? headers = {
+      //'Authorization': widget.authtoken,
+      // Add any other required headers,
+      'Content-Type': 'application/json'
+    };
     //print(token);
     try {
-      var response = await post(Uri.parse(url2), body: body);
+      var response = await post(Uri.parse(url2),headers: headers, body: body);
 //print(response.statusCode);
-//print(response.body);
+print(response.body);
 
 //print(authtoken);
       print(1);

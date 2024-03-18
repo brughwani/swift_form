@@ -7,22 +7,22 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:159854638865:android:ea9becf8dc325bf6cd3eb0",
+        "mobilesdk_app_id": "1:159854638865:android:8c8b9e7230bd31cdcd3eb0",
         "android_client_info": {
-          "package_name": "com.example.swift_form"
+          "package_name": "com.swiftform.in"
         }
       },
       "oauth_client": [
         {
-          "client_id": "159854638865-14qvi3jol7v76f7fs2frgepp1vi7vd8q.apps.googleusercontent.com",
+          "client_id": "159854638865-5l9a2cpl56lc58dnsrnquh8jif87051t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.swift_form",
+            "package_name": "com.swiftform.in",
             "certificate_hash": "cabee912bb74b62685a22eb25a8bf36dbb97f766"
           }
         },
         {
-          "client_id": "159854638865-r0gef7kqj00j8keluk0kmnncpii0q5d6.apps.googleusercontent.com",
+          "client_id": "159854638865-un2oommiglu6u55faen8fonplo3lno5p.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

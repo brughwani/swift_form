@@ -68,7 +68,86 @@ class _SwiftFormState extends State<SwiftForm> {
       );
     }
   }
+ Future<void> addcustomerdata(
+    Map<String, dynamic> customerdata) async {
+    var url = "http://10.0.2.2:3000/api/v1/customers";
+    var url2="${Config.getBaseUrl}/api/v1/customers";
+    final Map<String, String>? headers = {
+      'Authorization': widget.authtoken,
+      // Add any other required headers,
+      'Content-Type': 'application/json'
+    };
 
+    String body = jsonEncode(customerdata);
+
+
+    var response = await http.post(
+        Uri.parse(url2), headers: headers, body: body);
+    if (response.statusCode == 200) {
+      print("Success");
+      Fluttertoast.showToast(
+          msg: "Upload Sucessful",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 12
+      );
+    }
+    else {
+      print(response.body);
+      Fluttertoast.showToast(
+          msg: "Upload failed "+response.body,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 12
+      );
+    }
+  }
+   Future<void> additemdata(
+    Map<String, dynamic> itemdata) async {
+    var url = "http://10.0.2.2:3000/api/v1/items";
+    var url2="${Config.getBaseUrl}/api/v1/items";
+    final Map<String, String>? headers = {
+      'Authorization': widget.authtoken,
+      // Add any other required headers,
+      'Content-Type': 'application/json'
+    };
+
+    String body = jsonEncode(itemdata);
+
+print(body);
+    var response = await http.post(
+        Uri.parse(url2), headers: headers, body: body);
+    if (response.statusCode == 200) {
+      print("Success");
+      Fluttertoast.showToast(
+          msg: "Upload Sucessful",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 12
+      );
+    }
+    else {
+      print(response.body);
+      Fluttertoast.showToast(
+          msg: "Upload failed "+response.body,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 12
+      );
+    }
+  }
   Future<void> uploadcustomerdata(
       List<Map<String, dynamic>> customerdata) async {
     var url = "http://10.0.2.2:3000/api/v1/customers/bulk_create";
@@ -254,7 +333,86 @@ void showFormDialog(BuildContext context) {
 
                 _formKey.currentState!.save();
                 // Now _name and _address hold the user input
+                 Map<String, dynamic> c= {
+          "name": _name,
+          "address": _address,
+          
+        };
+addcustomerdata(c);
 
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+void showitemdialog(BuildContext context) {
+  final _formKey = GlobalKey<FormState>();
+  String _name = '';
+  double price= 0;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Add item'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Item Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a item name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _name = value!;
+                },
+              ),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'Price'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter price';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  price = double.tryParse(value!) ?? 0;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Submit'),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+
+                _formKey.currentState!.save();
+                // Now _name and _address hold the user input
+                 Map<String, dynamic> i= {
+          "name": _name,
+          "price": price,
+          
+        };
+//addcustomerdata(c);
+additemdata(i);
                 Navigator.of(context).pop();
               }
             },
@@ -355,14 +513,22 @@ void showFormDialog(BuildContext context) {
                   _opencustomerPicker();
                 },
               ),
-              // ListTile(
-              //   leading: Icon(Icons.people),
-              //   title: Text("Add customer"),
-              //   onTap: ()
-              //   {
-              //    showFormDialog(context);
-              //   },
-              // )
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text("Add customer"),
+                onTap: ()
+                {
+                 showFormDialog(context);
+                },
+              ),
+              ListTile(
+                  leading: Icon(Icons.people),
+                title: Text("Add Item"),
+                onTap: ()
+                {
+                 showitemdialog(context);
+                },
+              )
               // // Add more ListTiles or custom widgets as needed
             ],
           ),
